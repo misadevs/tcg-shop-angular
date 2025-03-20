@@ -1,0 +1,234 @@
+<div class="inventario-container">
+  <div class="header">
+    <h2>Gestión de Inventario de Tarjetas Pokémon</h2>
+    <button class="btn-primary" (click)="irAProductos()">
+      <i class="fas fa-arrow-left"></i> Volver a Productos
+    </button>
+  </div>
+  
+  <!-- Lista de productos -->
+  <div class="card productos-lista">
+    <div class="card-header">
+      <h3>Tarjetas en Inventario</h3>
+    </div>
+    <div class="table-responsive">
+      <table>
+        <thead>
+          <tr>
+            <th>ID</th>
+            <th>Imagen</th>
+            <th>Nombre</th>
+            <th>Rareza</th>
+            <th>PSA</th>
+            <th>Precio</th>
+            <th>Cantidad</th>
+            <th>Acciones</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let producto of productos">
+            <td>{{ producto.id }}</td>
+            <td>
+              <div class="img-container">
+                <img [src]="producto.imagen" alt="Imagen de tarjeta Pokémon" class="producto-thumbnail" 
+                    *ngIf="producto.imagen" />
+                <span class="no-image" *ngIf="!producto.imagen">Sin imagen</span>
+              </div>
+            </td>
+            <td>{{ producto.nombre }}</td>
+            <td><span class="badge rareza">{{ producto.rareza || 'N/A' }}</span></td>
+            <td><span class="badge psa">PSA {{ producto.psa || 'N/A' }}</span></td>
+            <td>${{ producto.precio }}</td>
+            <td>{{ producto.cantidad }}</td>
+            <td class="actions">
+              <button (click)="seleccionarProducto(producto)" class="btn-editar">
+                <i class="fas fa-edit"></i>
+              </button>
+              <button (click)="eliminarProducto(producto.id)" class="btn-eliminar">
+                <i class="fas fa-trash"></i>
+              </button>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+    <div *ngIf="productos.length === 0" class="empty-state">
+      <p>No hay tarjetas en el inventario. ¡Agrega algunas!</p>
+    </div>
+  </div>
+  
+  <div class="forms-container">
+    <!-- Formulario para editar -->
+    <div *ngIf="modoEdicion && productoSeleccionado" class="card formulario-edicion">
+      <div class="card-header">
+        <h3>Editar Tarjeta Pokémon</h3>
+      </div>
+      <div class="card-body">
+        <div class="form-layout">
+          <div class="form-column">
+            <div class="form-group">
+              <label for="edit-nombre">Nombre de la Tarjeta:</label>
+              <input type="text" id="edit-nombre" [(ngModel)]="productoSeleccionado.nombre" required>
+            </div>
+            <div class="form-group">
+              <label for="edit-descripcion">Descripción:</label>
+              <textarea id="edit-descripcion" [(ngModel)]="productoSeleccionado.descripcion" rows="3"></textarea>
+            </div>
+            <div class="form-row">
+              <div class="form-group">
+                <label for="edit-precio">Precio ($):</label>
+                <input type="number" id="edit-precio" [(ngModel)]="productoSeleccionado.precio" required>
+              </div>
+              <div class="form-group">
+                <label for="edit-cantidad">Cantidad:</label>
+                <input type="number" id="edit-cantidad" [(ngModel)]="productoSeleccionado.cantidad" required>
+              </div>
+            </div>
+            <div class="form-row">
+              <div class="form-group">
+                <label for="edit-rareza">Rareza:</label>
+                <select id="edit-rareza" [(ngModel)]="productoSeleccionado.rareza">
+                  <option value="">Seleccionar...</option>
+                  <option value="Common">Common</option>
+                  <option value="Uncommon">Uncommon</option>
+                  <option value="Rare">Rare</option>
+                  <option value="Holo Rare">Holo Rare</option>
+                  <option value="Ultra Rare">Ultra Rare</option>
+                  <option value="Secret Rare">Secret Rare</option>
+                </select>
+              </div>
+              <div class="form-group">
+                <label for="edit-psa">Calificación PSA:</label>
+                <select id="edit-psa" [(ngModel)]="productoSeleccionado.psa">
+                  <option value="0">Sin calificar</option>
+                  <option value="1">PSA 1</option>
+                  <option value="2">PSA 2</option>
+                  <option value="3">PSA 3</option>
+                  <option value="4">PSA 4</option>
+                  <option value="5">PSA 5</option>
+                  <option value="6">PSA 6</option>
+                  <option value="7">PSA 7</option>
+                  <option value="8">PSA 8</option>
+                  <option value="9">PSA 9</option>
+                  <option value="10">PSA 10</option>
+                </select>
+              </div>
+            </div>
+            <div class="form-group">
+              <label for="edit-imagen">URL de la imagen:</label>
+              <input type="text" id="edit-imagen" [(ngModel)]="productoSeleccionado.imagen">
+            </div>
+          </div>
+          <div class="form-column preview-column">
+            <div class="card-preview" *ngIf="productoSeleccionado.imagen">
+              <h4>Vista previa</h4>
+              <img [src]="productoSeleccionado.imagen" alt="Vista previa">
+              <div class="card-details">
+                <p class="card-name">{{ productoSeleccionado.nombre || 'Nombre de la Tarjeta' }}</p>
+                <p class="card-rarity" *ngIf="productoSeleccionado.rareza">{{ productoSeleccionado.rareza }}</p>
+                <p class="card-psa" *ngIf="productoSeleccionado.psa">PSA {{ productoSeleccionado.psa }}</p>
+                <p class="card-price">${{ productoSeleccionado.precio || '0.00' }}</p>
+              </div>
+            </div>
+            <div class="no-preview" *ngIf="!productoSeleccionado.imagen">
+              <p>Agrega una URL de imagen para ver la vista previa</p>
+            </div>
+          </div>
+        </div>
+        <div class="form-actions">
+          <button (click)="actualizarProducto()" class="btn-guardar">
+            <i class="fas fa-save"></i> Guardar Cambios
+          </button>
+          <button (click)="cancelarEdicion()" class="btn-cancelar">
+            <i class="fas fa-times"></i> Cancelar
+          </button>
+        </div>
+      </div>
+    </div>
+    
+    <!-- Formulario para agregar -->
+    <div class="card formulario-agregar" *ngIf="!modoEdicion">
+      <div class="card-header">
+        <h3>Agregar Nueva Tarjeta Pokémon</h3>
+      </div>
+      <div class="card-body">
+        <div class="form-layout">
+          <div class="form-column">
+            <div class="form-group">
+              <label for="new-nombre">Nombre de la Tarjeta:</label>
+              <input type="text" id="new-nombre" [(ngModel)]="nuevoProducto.nombre" required>
+            </div>
+            <div class="form-group">
+              <label for="new-descripcion">Descripción:</label>
+              <textarea id="new-descripcion" [(ngModel)]="nuevoProducto.descripcion" rows="3"></textarea>
+            </div>
+            <div class="form-row">
+              <div class="form-group">
+                <label for="new-precio">Precio ($):</label>
+                <input type="number" id="new-precio" [(ngModel)]="nuevoProducto.precio" required>
+              </div>
+              <div class="form-group">
+                <label for="new-cantidad">Cantidad:</label>
+                <input type="number" id="new-cantidad" [(ngModel)]="nuevoProducto.cantidad" required>
+              </div>
+            </div>
+            <div class="form-row">
+              <div class="form-group">
+                <label for="new-rareza">Rareza:</label>
+                <select id="new-rareza" [(ngModel)]="nuevoProducto.rareza">
+                  <option value="">Seleccionar...</option>
+                  <option value="Common">Common</option>
+                  <option value="Uncommon">Uncommon</option>
+                  <option value="Rare">Rare</option>
+                  <option value="Holo Rare">Holo Rare</option>
+                  <option value="Ultra Rare">Ultra Rare</option>
+                  <option value="Secret Rare">Secret Rare</option>
+                </select>
+              </div>
+              <div class="form-group">
+                <label for="new-psa">Calificación PSA:</label>
+                <select id="new-psa" [(ngModel)]="nuevoProducto.psa">
+                  <option value="0">Sin calificar</option>
+                  <option value="1">PSA 1</option>
+                  <option value="2">PSA 2</option>
+                  <option value="3">PSA 3</option>
+                  <option value="4">PSA 4</option>
+                  <option value="5">PSA 5</option>
+                  <option value="6">PSA 6</option>
+                  <option value="7">PSA 7</option>
+                  <option value="8">PSA 8</option>
+                  <option value="9">PSA 9</option>
+                  <option value="10">PSA 10</option>
+                </select>
+              </div>
+            </div>
+            <div class="form-group">
+              <label for="new-imagen">URL de la imagen:</label>
+              <input type="text" id="new-imagen" [(ngModel)]="nuevoProducto.imagen">
+            </div>
+          </div>
+          <div class="form-column preview-column">
+            <div class="card-preview" *ngIf="nuevoProducto.imagen">
+              <h4>Vista previa</h4>
+              <img [src]="nuevoProducto.imagen" alt="Vista previa">
+              <div class="card-details">
+                <p class="card-name">{{ nuevoProducto.nombre || 'Nombre de la Tarjeta' }}</p>
+                <p class="card-rarity" *ngIf="nuevoProducto.rareza">{{ nuevoProducto.rareza }}</p>
+                <p class="card-psa" *ngIf="nuevoProducto.psa">PSA {{ nuevoProducto.psa }}</p>
+                <p class="card-price">${{ nuevoProducto.precio || '0.00' }}</p>
+              </div>
+            </div>
+            <div class="no-preview" *ngIf="!nuevoProducto.imagen">
+              <p>Agrega una URL de imagen para ver la vista previa</p>
+            </div>
+          </div>
+        </div>
+        <div class="form-actions">
+          <button (click)="agregarProducto()" class="btn-agregar">
+            <i class="fas fa-plus"></i> Agregar Tarjeta
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,30 @@
+<div class="cards-container">
+  @for (card of cards; track card.id) {
+    <div class="card-item">
+      <div class="card-image-container">
+        <img [src]="card.imagen" alt="{{ card.nombre }}" class="card-image" />
+        <span class="card-rarity">Rare</span>
+      </div>
+      <div class="card-content">
+        <h3 class="card-name">{{ card.nombre }}</h3>
+        <p class="card-description">{{ card.descripcion }}</p>
+        <div class="card-footer">
+          <p class="card-price">{{ card.precio | currency }}</p>
+          <button class="card-button" (click)="agregarAlCarrito(card)">
+            <i class="fas fa-shopping-cart"></i> Añadir
+          </button>
+        </div>
+      </div>
+    </div>
+  }
+</div>
+
+<div class="cart-shortcut">
+  <button class="floating-button" (click)="irAlCarrito()">
+    <i class="fas fa-shopping-cart"></i>
+  </button>
+</div>
+
+<div *ngIf="mensaje" class="alert" [ngClass]="{'alert-success': mensaje.tipo === 'success', 'alert-error': mensaje.tipo === 'error'}">
+  {{ mensaje.texto }}
+</div>

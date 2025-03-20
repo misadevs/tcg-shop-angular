@@ -1,0 +1,360 @@
+// Pokemon brand colors
+$pokemon-blue: #2a75bb;
+$pokemon-yellow: #ffcb05;
+$pokemon-red: #ff0000;
+$light-gray: #f5f5f5;
+$dark-gray: #333;
+$card-border: #eaeaea;
+
+.inventario-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 20px;
+}
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 30px;
+  
+  h2 {
+    margin: 0;
+    color: $pokemon-blue;
+    font-size: 28px;
+  }
+}
+
+.card {
+  background: white;
+  border-radius: 10px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  margin-bottom: 30px;
+  border: 1px solid $card-border;
+  overflow: hidden;
+}
+
+.card-header {
+  background-color: $pokemon-blue;
+  color: white;
+  padding: 15px 20px;
+  
+  h3 {
+    margin: 0;
+    font-size: 20px;
+  }
+}
+
+.card-body {
+  padding: 20px;
+}
+
+// Table styling
+.table-responsive {
+  overflow-x: auto;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-bottom: 0;
+}
+
+th, td {
+  padding: 15px;
+  text-align: left;
+  border-bottom: 1px solid #eee;
+}
+
+th {
+  background-color: #f8f9fa;
+  font-weight: bold;
+  color: $dark-gray;
+}
+
+tr:hover {
+  background-color: #f8f9fa;
+}
+
+.img-container {
+  width: 60px;
+  height: 85px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: #f8f9fa;
+  border-radius: 5px;
+  overflow: hidden;
+}
+
+.producto-thumbnail {
+  max-width: 100%;
+  max-height: 100%;
+  object-fit: contain;
+}
+
+.no-image {
+  font-size: 12px;
+  color: #999;
+}
+
+.badge {
+  padding: 4px 8px;
+  border-radius: 4px;
+  font-size: 12px;
+  font-weight: 500;
+}
+
+.rareza {
+  background-color: $pokemon-yellow;
+  color: $dark-gray;
+}
+
+.psa {
+  background-color: #f1f1f1;
+  color: $dark-gray;
+}
+
+.actions {
+  display: flex;
+  gap: 10px;
+}
+
+// Empty state
+.empty-state {
+  padding: 40px 20px;
+  text-align: center;
+  color: #888;
+  
+  p {
+    margin: 0;
+  }
+}
+
+// Forms
+.forms-container {
+  margin-top: 30px;
+}
+
+.form-layout {
+  display: flex;
+  gap: 30px;
+}
+
+.form-column {
+  flex: 1;
+  
+  &.preview-column {
+    flex: 0.7;
+  }
+}
+
+.form-group {
+  margin-bottom: 20px;
+  
+  label {
+    display: block;
+    margin-bottom: 8px;
+    font-weight: 500;
+    color: $dark-gray;
+  }
+  
+  input, select, textarea {
+    width: 100%;
+    padding: 10px 12px;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    font-size: 15px;
+    
+    &:focus {
+      outline: none;
+      border-color: $pokemon-blue;
+      box-shadow: 0 0 0 2px rgba(42, 117, 187, 0.2);
+    }
+  }
+}
+
+.form-row {
+  display: flex;
+  gap: 15px;
+  
+  .form-group {
+    flex: 1;
+  }
+}
+
+.card-preview {
+  background-color: #f8f9fa;
+  border-radius: 10px;
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  height: 100%;
+  
+  h4 {
+    color: $pokemon-blue;
+    margin-top: 0;
+    margin-bottom: 15px;
+  }
+  
+  img {
+    max-width: 100%;
+    max-height: 250px;
+    object-fit: contain;
+    margin-bottom: 15px;
+    border-radius: 5px;
+  }
+  
+  .card-details {
+    width: 100%;
+    
+    p {
+      margin: 8px 0;
+    }
+    
+    .card-name {
+      font-weight: bold;
+      color: $pokemon-blue;
+    }
+    
+    .card-rarity {
+      color: darken($pokemon-yellow, 10%);
+      font-size: 14px;
+    }
+    
+    .card-psa {
+      color: $dark-gray;
+      font-size: 14px;
+    }
+    
+    .card-price {
+      font-weight: bold;
+      font-size: 18px;
+    }
+  }
+}
+
+.no-preview {
+  background-color: #f8f9fa;
+  border-radius: 10px;
+  padding: 20px;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  color: #999;
+}
+
+.form-actions {
+  display: flex;
+  gap: 15px;
+  margin-top: 20px;
+  justify-content: flex-end;
+}
+
+// Buttons
+button {
+  cursor: pointer;
+  padding: 10px 15px;
+  border: none;
+  border-radius: 5px;
+  font-weight: 500;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  transition: all 0.2s;
+}
+
+.btn-primary {
+  background-color: $pokemon-blue;
+  color: white;
+  
+  &:hover {
+    background-color: darken($pokemon-blue, 10%);
+  }
+}
+
+.btn-editar {
+  background-color: $pokemon-blue;
+  color: white;
+  padding: 8px;
+  
+  &:hover {
+    background-color: darken($pokemon-blue, 10%);
+  }
+}
+
+.btn-eliminar {
+  background-color: $pokemon-red;
+  color: white;
+  padding: 8px;
+  
+  &:hover {
+    background-color: darken($pokemon-red, 10%);
+  }
+}
+
+.btn-agregar, .btn-guardar {
+  background-color: $pokemon-blue;
+  color: white;
+  
+  &:hover {
+    background-color: darken($pokemon-blue, 10%);
+  }
+}
+
+.btn-cancelar {
+  background-color: #6c757d;
+  color: white;
+  
+  &:hover {
+    background-color: darken(#6c757d, 10%);
+  }
+}
+
+// Responsive design
+@media (max-width: 992px) {
+  .form-layout {
+    flex-direction: column;
+  }
+  
+  .form-column {
+    &.preview-column {
+      flex: 1;
+    }
+  }
+  
+  .card-preview {
+    max-height: 400px;
+  }
+}
+
+@media (max-width: 768px) {
+  .header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 15px;
+  }
+  
+  .form-row {
+    flex-direction: column;
+    gap: 20px;
+  }
+  
+  th, td {
+    padding: 10px;
+  }
+  
+  .actions {
+    flex-direction: column;
+    gap: 5px;
+  }
+}
+
+@media (max-width: 576px) {
+  .inventario-container {
+    padding: 10px;
+  }
+}

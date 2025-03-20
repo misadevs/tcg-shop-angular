@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<productos>
+<producto id="1">
+            <nombre>Dialga</nombre>
+            <precio>150</precio>
+            <cantidad>5</cantidad>
+            <imagen>https://assets.pokemon-zone.com/game-assets/CardPreviews/cPK_10_004000_00_DIALGAex_RR.webp</imagen>
+            </producto>
+<producto id="2">
+            <nombre>Mew ex</nombre>
+            <precio>200</precio>
+            <cantidad>2</cantidad>
+            <imagen>https://assets.pokemon-zone.com/game-assets/CardPreviews/cPK_10_002450_00_MEWex_RR.webp</imagen>
+            </producto>
+<producto id="3">
+            <nombre>Palkia</nombre>
+            <precio>200</precio>
+            <cantidad>2</cantidad>
+            <imagen>https://assets.pokemon-zone.com/game-assets/CardPreviews/cPK_10_003300_00_PALKIAex_RR.webp</imagen>
+            </producto>
+<producto id="4">
+            <nombre>Venasaur</nombre>
+            <precio>223</precio>
+            <cantidad>7</cantidad>
+            <imagen>https://assets.pokemon-zone.com/game-assets/CardPreviews/cPK_10_000040_00_FUSHIGIBANAex_RR.webp</imagen>
+            </producto>
+<producto id="5">
+            <nombre>Zapdos</nombre>
+            <precio>1500</precio>
+            <cantidad>1</cantidad>
+            <imagen>https://assets.pokemon-zone.com/game-assets/CardPreviews/cPK_20_001040_01_THUNDERex_SAR.webp</imagen>
+            </producto>
+<producto id="6">
+            <nombre>Pikachu</nombre>
+            <precio>200</precio>
+            <cantidad>2</cantidad>
+            <imagen>https://assets.pokemon-zone.com/game-assets/CardPreviews/cPK_90_000940_00_PIKACHU_AR.webp</imagen>
+            </producto>
+</productos>
