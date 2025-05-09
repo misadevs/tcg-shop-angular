@@ -1,7 +1,9 @@
 import { CommonModule } from '@angular/common';
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, NgZone } from '@angular/core';
 import { RouterModule } from '@angular/router';
 import { CarritoService } from '../data-access/carrito.service';
+import { environment } from '../../../environments/environment';
+import { NgxPayPalModule, IPayPalConfig, ICreateOrderRequest } from 'ngx-paypal';
 
 interface ProductoEnCarrito {
   id: number;
@@ -18,23 +20,93 @@ interface ProductoEnCarrito {
 @Component({
   selector: 'app-carrito',
   standalone: true,
-  imports: [CommonModule, RouterModule],
+  imports: [CommonModule, RouterModule, NgxPayPalModule],
   templateUrl: './carrito.component.html',
   styleUrls: ['./carrito.component.scss']
 })
 export class CarritoComponent implements OnInit {
   carrito: ProductoEnCarrito[] = [];
   mensaje: { texto: string, tipo: 'success' | 'error' } | null = null;
+  payPalConfig?: IPayPalConfig;
   
-  constructor(private carritoService: CarritoService) {}
+  constructor(
+    private carritoService: CarritoService,
+    private ngZone: NgZone
+  ) {}
   
   ngOnInit() {
     this.actualizarCarrito();
+    this.initConfig();
   }
-  
+
+  private initConfig(): void {
+    this.payPalConfig = {
+      currency: 'MXN',
+      clientId: environment.paypal.clientId,
+      createOrderOnClient: (data) => <ICreateOrderRequest>{
+        intent: 'CAPTURE',
+        purchase_units: [
+          {
+            amount: {
+              currency_code: 'MXN',
+              value: this.calcularTotal().toString(),
+              breakdown: {
+                item_total: {
+                  currency_code: 'MXN',
+                  value: this.calcularSubtotal().toString()
+                },
+                shipping: {
+                  currency_code: 'MXN',
+                  value: this.calcularEnvio().toString()
+                }
+              }
+            },
+            items: this.carrito.map(item => {
+              return {
+                name: item.nombre,
+                quantity: item.cantidadEnCarrito?.toString() || '1',
+                category: 'DIGITAL_GOODS',
+                unit_amount: {
+                  currency_code: 'MXN',
+                  value: item.precio.toString(),
+                }
+              };
+            })
+          }
+        ]
+      },
+      advanced: {
+        commit: 'true'
+      },
+      style: {
+        label: 'paypal',
+        layout: 'vertical'
+      },
+      onApprove: (data, actions) => {
+        actions.order.get();
+      },
+      onClientAuthorization: (data) => {
+        this.mostrarMensaje('¡Pago completado con éxito!', 'success');
+        this.generarXML();
+        this.carritoService.limpiarCarrito();
+        this.actualizarCarrito();
+      },
+      onCancel: (data, actions) => {
+        this.mostrarMensaje('Pago cancelado', 'error');
+      },
+      onError: err => {
+        this.mostrarMensaje('Error en el proceso de pago', 'error');
+      },
+    };
+  }
+
   actualizarCarrito() {
     this.carrito = this.carritoService.obtenerCarrito();
-    console.log('Carrito actualizado:', this.carrito);
+    
+    // Reinicializar PayPal con el nuevo total
+    if (this.carrito.length > 0) {
+      this.initConfig();
+    }
   }
 
   generarXML() {
@@ -51,9 +123,7 @@ export class CarritoComponent implements OnInit {
   aumentarCantidad(index: number) {
     // Get the current quantity before making changes
     const cantidadActual = this.carrito[index].cantidadEnCarrito || 1;
-    
-    console.log(`Aumentando cantidad para el ítem ${index} de ${cantidadActual} a ${cantidadActual + 1}`);
-    
+        
     const resultado = this.carritoService.actualizarCantidad(index, cantidadActual + 1);
     
     if (resultado.success) {
@@ -65,9 +135,7 @@ export class CarritoComponent implements OnInit {
   
   disminuirCantidad(index: number) {
     const cantidadActual = this.carrito[index].cantidadEnCarrito || 1;
-    
-    console.log(`Disminuyendo cantidad para el ítem ${index} de ${cantidadActual} a ${cantidadActual - 1}`);
-    
+        
     if (cantidadActual > 1) {
       const resultado = this.carritoService.actualizarCantidad(index, cantidadActual - 1);
       

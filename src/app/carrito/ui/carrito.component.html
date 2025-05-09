@@ -70,9 +70,9 @@
             <span>{{ calcularTotal() | currency }}</span>
           </div>
         </div>
-        <button (click)="generarXML()" class="btn-checkout">
-          <i class="fas fa-credit-card"></i> Proceder al Pago
-        </button>
+        <div class="paypal-container" *ngIf="carrito.length > 0">
+          <ngx-paypal [config]="payPalConfig"></ngx-paypal>
+        </div>
       </div>
     </div>
   </div>
