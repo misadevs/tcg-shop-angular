@@ -1,54 +1,46 @@
 import { inject, Injectable } from '@angular/core';
-import { catchError, map, Observable } from 'rxjs';
-import { HttpClient } from '@angular/common/http';
+import { Observable, from, map, catchError, of, tap } from 'rxjs';
 import { Producto } from '../../shared/interfaces/producto.interface';
+import { SupabaseService } from '../../shared/services/supabase.service';
 
 @Injectable({
   providedIn: 'root'
 })
 export class ProductoService {
-  private xmlUrl = 'productos.xml';
-  private http = inject(HttpClient);
+  private supabase = inject(SupabaseService);
 
-  obtenerProducto(): Observable<Producto[]>{
-    const productos = localStorage.getItem('productos');
-
-    if (productos) {
-      return new Observable<Producto[]>(observer => {
-        observer.next(this.parseXML(productos));
-        observer.complete();
-      });
-    } else {
-      return this.http.get(this.xmlUrl, { responseType: 'text' }).pipe(
-        map(xml => this.parseXML(xml)),
-        catchError(error => {
-          console.error('Error al cargar los productos:', error);
-          return [];
-        })
-      )
-    }
-  }
-
-  private parseXML(xml: string): Producto[] {
-    const parser = new DOMParser();
-    const xmlDoc = parser.parseFromString(xml, 'text/xml');
-    const productos: Producto[] = [];
+  obtenerProducto(): Observable<Producto[]> {
+    console.log('ProductoService: Obteniendo productos de Supabase');
     
-    Array.from(xmlDoc.getElementsByTagName('producto')).forEach(prod => {
-      const id = parseInt(prod.getAttribute('id') || '0');
-      
-      productos.push({
-        id: id,
-        nombre: prod.getElementsByTagName('nombre')[0]?.textContent || '',
-        imagen: prod.getElementsByTagName('imagen')[0]?.textContent || '',
-        precio: parseInt(prod.getElementsByTagName('precio')[0]?.textContent || '0'),
-        cantidad: parseInt(prod.getElementsByTagName('cantidad')[0]?.textContent || '0'),
-        descripcion: prod.getElementsByTagName('descripcion')[0]?.textContent || '',
-        psa: parseInt(prod.getElementsByTagName('psa')[0]?.textContent || '0'),
-        rareza: prod.getElementsByTagName('rareza')[0]?.textContent || '',
-      });
-    });
-    
-    return productos;
+    return from(this.supabase.client.from('producto').select('*')).pipe(
+      tap(response => {
+        if (response.error) {
+          console.error('Error al obtener productos:', response.error);
+        } else {
+          console.log(`Se encontraron ${response.data?.length || 0} productos`);
+        }
+      }),
+      map(response => {
+        if (response.error) {
+          throw response.error;
+        }
+        
+        // Convert DB rows to Producto objects
+        return response.data.map(p => ({
+          id: p.id_producto,
+          nombre: p.nombre || '',
+          imagen: p.imagen || '',
+          precio: p.precio || 0,
+          cantidad: p.cantidad || 0,
+          descripcion: p.descripcion || '',
+          psa: p.psa || 0,
+          rareza: p.rareza || ''
+        }));
+      }),
+      catchError(error => {
+        console.error('Error al obtener productos de Supabase:', error);
+        return of([]);
+      })
+    );
   }
 }

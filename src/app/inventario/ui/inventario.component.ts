@@ -16,6 +16,8 @@ export class InventarioComponent implements OnInit {
   productos: Producto[] = [];
   productoSeleccionado: Producto | null = null;
   modoEdicion = false;
+  isLoading = false;
+  mensaje: { texto: string, tipo: 'success' | 'error' } | null = null;
   
   nuevoProducto: Producto = this.inicializarProducto();
 
@@ -25,9 +27,18 @@ export class InventarioComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
+    this.cargarProductos();
+  }
+  
+  cargarProductos(): void {
+    this.isLoading = true;
     this.inventarioService.productos$.subscribe(productos => {
       this.productos = productos;
+      this.isLoading = false;
     });
+    
+    // Ensure data is loaded from the database
+    this.inventarioService.cargarProductos();
   }
 
   inicializarProducto(): Producto {
@@ -43,13 +54,35 @@ export class InventarioComponent implements OnInit {
     };
   }
 
-  agregarProducto(): void {
+  async agregarProducto(): Promise<void> {
+    console.log('Datos del formulario:', this.nuevoProducto);
+    
+    // Validate form data first
     if (this.validarProducto(this.nuevoProducto)) {
-      this.inventarioService.agregarProducto({...this.nuevoProducto});
-      this.resetearFormulario();
-      alert('Tarjeta agregada con éxito');
+      this.isLoading = true;
+      try {
+        // Make sure numeric fields are actually numbers
+        const productoParaGuardar = {
+          ...this.nuevoProducto,
+          precio: Number(this.nuevoProducto.precio),
+          cantidad: Number(this.nuevoProducto.cantidad),
+          psa: Number(this.nuevoProducto.psa || 0)
+        };
+        
+        console.log('Producto validado para guardar:', productoParaGuardar);
+        
+        await this.inventarioService.agregarProducto(productoParaGuardar);
+        
+        this.resetearFormulario();
+        this.mostrarMensaje('Tarjeta agregada con éxito', 'success');
+      } catch (error) {
+        console.error('Error al agregar producto:', error);
+        this.mostrarMensaje('Error al agregar la tarjeta. Revisa la consola para más detalles.', 'error');
+      } finally {
+        this.isLoading = false;
+      }
     } else {
-      alert('Por favor completa los campos requeridos');
+      this.mostrarMensaje('Por favor completa los campos requeridos', 'error');
     }
   }
 
@@ -62,23 +95,49 @@ export class InventarioComponent implements OnInit {
     this.modoEdicion = true;
   }
 
-  actualizarProducto(): void {
+  async actualizarProducto(): Promise<void> {
     if (this.productoSeleccionado && this.validarProducto(this.productoSeleccionado)) {
-      this.inventarioService.actualizarProducto(this.productoSeleccionado);
-      this.cancelarEdicion();
-      alert('Tarjeta actualizada con éxito');
+      this.isLoading = true;
+      try {
+        // Make sure numeric fields are actually numbers
+        const productoParaActualizar = {
+          ...this.productoSeleccionado,
+          precio: Number(this.productoSeleccionado.precio),
+          cantidad: Number(this.productoSeleccionado.cantidad),
+          psa: Number(this.productoSeleccionado.psa || 0)
+        };
+        
+        console.log('Producto validado para actualizar:', productoParaActualizar);
+        
+        await this.inventarioService.actualizarProducto(productoParaActualizar);
+        this.cancelarEdicion();
+        this.mostrarMensaje('Tarjeta actualizada con éxito', 'success');
+      } catch (error) {
+        console.error('Error al actualizar producto:', error);
+        this.mostrarMensaje('Error al actualizar la tarjeta. Revisa la consola para más detalles.', 'error');
+      } finally {
+        this.isLoading = false;
+      }
     } else {
-      alert('Por favor completa los campos requeridos');
+      this.mostrarMensaje('Por favor completa los campos requeridos', 'error');
     }
   }
 
-  eliminarProducto(id: number): void {
+  async eliminarProducto(id: number): Promise<void> {
     if (confirm('¿Estás seguro de que deseas eliminar esta tarjeta?')) {
-      this.inventarioService.eliminarProducto(id);
-      if (this.productoSeleccionado?.id === id) {
-        this.cancelarEdicion();
+      this.isLoading = true;
+      try {
+        await this.inventarioService.eliminarProducto(id);
+        if (this.productoSeleccionado?.id === id) {
+          this.cancelarEdicion();
+        }
+        this.mostrarMensaje('Tarjeta eliminada con éxito', 'success');
+      } catch (error) {
+        console.error('Error al eliminar producto:', error);
+        this.mostrarMensaje('Error al eliminar la tarjeta', 'error');
+      } finally {
+        this.isLoading = false;
       }
-      alert('Tarjeta eliminada con éxito');
     }
   }
 
@@ -93,5 +152,12 @@ export class InventarioComponent implements OnInit {
 
   private validarProducto(producto: Producto): boolean {
     return !!producto.nombre && producto.precio > 0 && producto.cantidad >= 0;
+  }
+  
+  private mostrarMensaje(texto: string, tipo: 'success' | 'error') {
+    this.mensaje = { texto, tipo };
+    setTimeout(() => {
+      this.mensaje = null;
+    }, 3000);
   }
 }

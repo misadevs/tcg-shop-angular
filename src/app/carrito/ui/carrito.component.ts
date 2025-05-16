@@ -2,6 +2,8 @@ import { CommonModule } from '@angular/common';
 import { Component, OnInit, NgZone } from '@angular/core';
 import { RouterModule } from '@angular/router';
 import { CarritoService } from '../data-access/carrito.service';
+import { PedidoService } from '../data-access/pedido.service';
+import { SupabaseService } from '../../shared/services/supabase.service';
 import { environment } from '../../../environments/environment';
 import { NgxPayPalModule, IPayPalConfig, ICreateOrderRequest } from 'ngx-paypal';
 
@@ -31,6 +33,8 @@ export class CarritoComponent implements OnInit {
   
   constructor(
     private carritoService: CarritoService,
+    private pedidoService: PedidoService,
+    private supabaseService: SupabaseService,
     private ngZone: NgZone
   ) {}
   
@@ -85,7 +89,10 @@ export class CarritoComponent implements OnInit {
       onApprove: (data, actions) => {
         actions.order.get();
       },
-      onClientAuthorization: (data) => {
+      onClientAuthorization: async (data) => {
+        // Save order using the pedido service
+        await this.guardarPedido(data);
+        
         this.mostrarMensaje('¡Pago completado con éxito!', 'success');
         this.generarXML();
         this.carritoService.limpiarCarrito();
@@ -98,6 +105,51 @@ export class CarritoComponent implements OnInit {
         this.mostrarMensaje('Error en el proceso de pago', 'error');
       },
     };
+  }
+
+  async guardarPedido(paypalData: any) {
+    try {
+      // Get current authenticated user from Supabase
+      const { data: { user } } = await this.supabaseService.client.auth.getUser();
+      
+      // Get user email from Supabase auth
+      const userEmail = user?.email;
+      console.log('Email del usuario autenticado:', userEmail);
+      
+      // Find the user ID in our database by email
+      let idUsuario = 1; // Default guest user ID
+      
+      if (userEmail) {
+        // Query the user table to find the user by email
+        const { data: userData, error: userError } = await this.supabaseService.client
+          .from('usuarios') // Adjust table name if different
+          .select('id_usuario')
+          .eq('correo', userEmail)
+          .single();
+          
+        if (userData && !userError) {
+          idUsuario = userData.id_usuario;
+        }
+      }
+      
+      const productos = this.carrito.map(item => ({
+        id_producto: item.id,
+        precio: item.precio,
+        cantidadEnCarrito: item.cantidadEnCarrito || 1
+      }));
+      
+      // Use pedidoService to create the order
+      const pedido = await this.pedidoService.crearPedido(
+        idUsuario, 
+        productos, 
+        this.calcularTotal()
+      );
+      
+      console.log('Pedido guardado correctamente:', pedido);
+    } catch (error) {
+      console.error('Error al guardar el pedido:', error);
+      this.mostrarMensaje('Error al guardar el pedido', 'error');
+    }
   }
 
   actualizarCarrito() {

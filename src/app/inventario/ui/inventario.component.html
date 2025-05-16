@@ -1,3 +1,11 @@
+<div *ngIf="mensaje" class="alert" [ngClass]="{'alert-success': mensaje.tipo === 'success', 'alert-error': mensaje.tipo === 'error'}">
+  {{ mensaje.texto }}
+</div>
+
+<div class="loading-overlay" *ngIf="isLoading">
+  <div class="spinner"></div>
+</div>
+
 <div class="inventario-container">
   <div class="header">
     <h2>Gestión de Inventario de Tarjetas Pokémon</h2>
