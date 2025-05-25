@@ -4,7 +4,7 @@
   </div>
   <nav class="header__nav">
     <a class="header__nav-link" routerLink="/" routerLinkActive="active">Productos</a>
-    <a class="header__nav-link" routerLink="/inventario" routerLinkActive="active">Inventario</a>
+    <a *ngIf="isAdmin" class="header__nav-link" routerLink="/inventario" routerLinkActive="active">Inventario</a>
     <a class="header__nav-link" routerLink="/carrito" routerLinkActive="active">Carrito</a>
     <a class="header__nav-link" (click)="cerrarSesion()" style="cursor: pointer;">Cerrar Sesión</a>
   </nav>
