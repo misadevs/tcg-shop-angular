@@ -33,7 +33,13 @@ Deno.serve(async (req) => {
         from: 'Pokemon TCG Shop <onboarding@resend.dev>', // Puedes configurar un dominio personalizado en Resend
         to: [userData.correo],
         subject: `Confirmación de tu pedido #${pedido.id_pedido}`,
-        html: `<h1>¡Gracias por tu compra, <span class="math-inline">\{userData\.nombre\}\!</h1\><p\>Hemos recibido tu pedido \#</span>{pedido.id_pedido} por un total de <strong>$${pedido.precio_total} MXN</strong>.</p><p>Pronto te notificaremos cuando sea enviado.</p>`,
+        html: `
+          <div style="font-family: Arial, sans-serif; line-height: 1.6;">
+            <h2>¡Gracias por tu compra, ${userData.nombre}!</h2>
+            <p>Hemos recibido tu pedido <strong>#${pedido.id_pedido}</strong> por un total de <strong>$${pedido.precio_total} MXN</strong>.</p>
+            <p>Pronto te notificaremos cuando sea enviado. ¡Gracias por confiar en Pokémon TCG Shop!</p>
+          </div>
+        `,
       }),
     });
 
