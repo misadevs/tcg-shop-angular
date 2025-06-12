@@ -8,12 +8,14 @@ import { AuthGuard } from './auth/guards/auth.guard';
 import { RequestPasswordResetComponent } from './auth/ui/request-password-reset/request-password-reset.component';
 import { UpdatePasswordComponent } from './auth/ui/update-password/update-password.component';
 import { HistorialComponent } from './historial/ui/historial.component';
+import { GestionUsuariosComponent } from './admin/ui/gestion-usuarios.component';
 
 export const routes: Routes = [
     { path: '', component: ProductoComponent, canActivate: [AuthGuard] },
     { path: 'carrito', component: CarritoComponent, canActivate: [AuthGuard] },
     { path: 'inventario', component: InventarioComponent, canActivate: [AuthGuard] },
-    { path: 'historial', component: HistorialComponent, canActivate: [AuthGuard] },
+    { path: 'gestion-usuarios', component: GestionUsuariosComponent, canActivate: [AuthGuard] },
+       { path: 'historial', component: HistorialComponent, canActivate: [AuthGuard] },
     { path: 'login', component: LoginComponent },
     { path: 'register', component: RegisterComponent },
     { path: 'request-password-reset', component: RequestPasswordResetComponent },

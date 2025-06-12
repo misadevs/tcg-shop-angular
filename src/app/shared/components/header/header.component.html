@@ -5,6 +5,7 @@
   <nav class="header__nav">
     <a class="header__nav-link" routerLink="/" routerLinkActive="active">Productos</a>
     <a *ngIf="isAdmin" class="header__nav-link" routerLink="/inventario" routerLinkActive="active">Inventario</a>
+    <a *ngIf="isAdmin" class="header__nav-link" routerLink="/gestion-usuarios" routerLinkActive="active">Usuarios</a>
     <a class="header__nav-link" routerLink="/carrito" routerLinkActive="active">Carrito</a>
     <a class="header__nav-link" routerLink="/historial" routerLinkActive="active">Mis Pedidos</a>
     <a class="header__nav-link" (click)="cerrarSesion()" style="cursor: pointer;">Cerrar Sesión</a>

@@ -11,25 +11,21 @@ export class AuthGuard implements CanActivate {
     state: RouterStateSnapshot
   ): Promise<boolean | UrlTree> {
     const { data: { user } } = await this.supabase.client.auth.getUser();
+    const adminRoutes = ['/inventario', '/gestion-usuarios']; // Arreglo de rutas de admin
+  
     if (user) {
-      if (state.url === '/inventario') {
+      if (adminRoutes.includes(state.url)) {
         const { data: userData, error } = await this.supabase.client
           .from('usuario')
           .select('rol')
           .eq('google_id', user.id)
           .single();
-
-        if (error) {
-          console.error('Error fetching user role:', error);
-          return this.router.createUrlTree(['/login']);
+  
+        if (error || !userData || userData.rol !== 'admin') {
+          console.error('Acceso denegado. Se requiere rol de administrador.');
+          return this.router.createUrlTree(['/']);
         }
-
-        if (userData && userData.rol === 'admin') {
-          return true;
-        } else {
-          // Redirect to home or an unauthorized page if not admin
-          return this.router.createUrlTree(['/']); 
-        }
+        return true;
       }
       return true;
     } else {
