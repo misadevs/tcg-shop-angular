@@ -1,0 +1,7 @@
+{
+    "record": {
+      "id_pedido": 999,
+      "id_usuario": 1,
+      "precio_total": 123.45
+    }
+  }

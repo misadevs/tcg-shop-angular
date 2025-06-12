@@ -73,6 +73,12 @@ $success-color: #198754;
   padding-left: 45px;
 }
 
+.card-button:disabled {
+  background-color: #6c757d; // Color gris
+  cursor: not-allowed;
+  transform: none; // Evita el efecto de hover
+}
+
 // --- El truco para que los <select> se vean bien ---
 .filter-select {
   appearance: none; // Oculta la flecha por defecto del navegador

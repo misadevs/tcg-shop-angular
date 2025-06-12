@@ -21,22 +21,25 @@ export class CarritoService {
   }
 
   agregarProducto(producto: Producto): { success: boolean, message: string } {
-    // Find if product already exists in cart
     const itemExistente = this.carrito.find(item => item.id === producto.id);
-    
+  
+    // Verificación 1: Si el producto ya está en el carrito, no se puede agregar más que el stock total.
+    if (itemExistente && (itemExistente.cantidadEnCarrito || 0) >= producto.cantidad) {
+      return { 
+        success: false, 
+        message: `No hay más stock disponible. Máximo: ${producto.cantidad}`
+      };
+    }
+  
+    // Verificación 2: Si el producto es nuevo en el carrito, pero su stock es 0, no se puede agregar.
+    if (!itemExistente && producto.cantidad <= 0) {
+      return { success: false, message: 'Este producto no tiene stock disponible.' };
+    }
+  
+    // Si pasa las verificaciones, procede a agregar o actualizar.
     if (itemExistente) {
-      // Check if adding one more would exceed stock
-      if ((itemExistente.cantidadEnCarrito || 1) >= producto.cantidad) {
-        return { 
-          success: false, 
-          message: `No hay más stock disponible. Máximo: ${producto.cantidad}`
-        };
-      }
-      
-      // Increment quantity
-      itemExistente.cantidadEnCarrito = (itemExistente.cantidadEnCarrito || 1) + 1;
+      itemExistente.cantidadEnCarrito = (itemExistente.cantidadEnCarrito || 0) + 1;
     } else {
-      // Add new product with quantity 1
       this.carrito.push({ ...producto, cantidadEnCarrito: 1 });
     }
     

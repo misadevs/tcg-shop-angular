@@ -35,8 +35,11 @@
         <p class="card-description">{{ card.descripcion }}</p>
         <div class="card-footer">
           <p class="card-price">{{ card.precio | currency }}</p>
-          <button class="card-button" (click)="agregarAlCarrito(card)">
-            <i class="fas fa-shopping-cart"></i> Añadir
+          <button class="card-button"
+            (click)="agregarAlCarrito(card)"
+            [disabled]="card.cantidad <= 0">
+            <i class="fas fa-shopping-cart"></i>
+            {{ card.cantidad <= 0 ? 'Sin Stock' : 'Añadir' }}
           </button>
         </div>
       </div>
