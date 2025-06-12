@@ -1,0 +1,53 @@
+<div class="historial-container">
+    <div class="header">
+      <h2>Mi Historial de Pedidos</h2>
+    </div>
+  
+    <div class="loading-overlay" *ngIf="isLoading">
+      <div class="spinner"></div>
+    </div>
+  
+    <div *ngIf="error" class="empty-state">
+      <p>{{ error }}</p>
+    </div>
+  
+    <div *ngIf="!isLoading && !error && pedidos.length === 0" class="empty-state">
+      <i class="fas fa-receipt"></i>
+      <h3>No has realizado ningún pedido todavía.</h3>
+      <p>¡Explora nuestro catálogo y encuentra tus cartas favoritas!</p>
+      <button class="btn-primary" routerLink="/">Ver productos</button>
+    </div>
+  
+    <div *ngIf="!isLoading && pedidos.length > 0" class="pedidos-list">
+      <div class="pedido-card" *ngFor="let pedido of pedidos">
+        <div class="pedido-header">
+          <div class="pedido-info">
+            <h3>Pedido #{{ pedido.id_pedido }}</h3>
+            <p>
+              <strong>Fecha:</strong> {{ pedido.fecha | date:'dd/MM/yyyy' }}
+            </p>
+          </div>
+          <div class="pedido-total">
+            <span>Total del Pedido</span>
+            <h4>{{ pedido.precio_total | currency }}</h4>
+          </div>
+        </div>
+  
+        <div class="pedido-body">
+          <h4>Productos en este pedido:</h4>
+          <div class="productos-list">
+            <div class="producto-item" *ngFor="let item of pedido.pedido_producto">
+              <img [src]="item.producto.imagen" [alt]="item.producto.nombre" class="producto-thumbnail">
+              <div class="producto-details">
+                <span class="producto-nombre">{{ item.producto.nombre }}</span>
+                <span class="producto-cantidad">Cantidad: {{ item.cantidad }}</span>
+              </div>
+              <div class="producto-precio">
+                {{ item.precio_unitario | currency }} c/u
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>

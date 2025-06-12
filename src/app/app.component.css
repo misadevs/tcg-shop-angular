@@ -16,3 +16,13 @@ a {
 a:hover {
     text-decoration: underline;
 }
+
+.app-container {
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh; /* Clave 1: El contenedor ocupa al menos toda la altura de la pantalla */
+}
+
+.main-content {
+flex-grow: 1; /* Clave 2: El contenido principal se expande para ocupar todo el espacio sobrante */
+}

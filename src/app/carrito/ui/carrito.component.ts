@@ -109,46 +109,41 @@ export class CarritoComponent implements OnInit {
 
   async guardarPedido(paypalData: any) {
     try {
-      // Get current authenticated user from Supabase
       const { data: { user } } = await this.supabaseService.client.auth.getUser();
-      
-      // Get user email from Supabase auth
-      const userEmail = user?.email;
-      console.log('Email del usuario autenticado:', userEmail);
-      
-      // Find the user ID in our database by email
-      let idUsuario = 1; // Default guest user ID
-      
-      if (userEmail) {
-        // Query the user table to find the user by email
-        const { data: userData, error: userError } = await this.supabaseService.client
-          .from('usuarios') // Adjust table name if different
-          .select('id_usuario')
-          .eq('correo', userEmail)
-          .single();
-          
-        if (userData && !userError) {
-          idUsuario = userData.id_usuario;
-        }
+      if (!user) throw new Error('Usuario no autenticado.');
+  
+      const { data: userData, error: userError } = await this.supabaseService.client
+        .from('usuario')
+        .select('id_usuario')
+        .eq('google_id', user.id)
+        .single();
+  
+      if (userError || !userData) {
+        throw new Error('No se encontró el perfil del usuario en la base de datos.');
       }
-      
+  
+      const idUsuarioNumerico = userData.id_usuario;
+  
       const productos = this.carrito.map(item => ({
         id_producto: item.id,
         precio: item.precio,
         cantidadEnCarrito: item.cantidadEnCarrito || 1
       }));
-      
-      // Use pedidoService to create the order
-      const pedido = await this.pedidoService.crearPedido(
-        idUsuario, 
+  
+      await this.pedidoService.crearPedido(
+        idUsuarioNumerico, 
         productos, 
         this.calcularTotal()
       );
-      
-      console.log('Pedido guardado correctamente:', pedido);
-    } catch (error) {
+  
+      this.mostrarMensaje('¡Pago completado con éxito!', 'success');
+      this.generarXML();
+      this.carritoService.limpiarCarrito();
+      this.actualizarCarrito();
+  
+    } catch (error: any) {
       console.error('Error al guardar el pedido:', error);
-      this.mostrarMensaje('Error al guardar el pedido', 'error');
+      this.mostrarMensaje(error.message || 'Error al guardar el pedido.', 'error');
     }
   }
 
